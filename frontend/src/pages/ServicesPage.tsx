@@ -20,10 +20,9 @@ const MATRYOSHKA_INACTIVE_URL = MINIO_BASE_URL + 'icons8-matryoshka-unaktiv.png'
 
 export const ServicesPage: React.FC = () => {
     const dispatch = useDispatch();
-    // Берем "глобальное" значение поиска (которое уже было отправлено по кнопке)
     const { searchTerm } = useSelector((state: RootState) => state.filters);
 
-    // Локальное состояние для инпута (чтобы не искать при каждом нажатии клавиши)
+    // Локальный инпут для поиска по кнопке
     const [localInput, setLocalInput] = useState<string>(searchTerm);
 
     const [letters, setLetters] = useState<Letter[]>([]);
@@ -33,10 +32,9 @@ export const ServicesPage: React.FC = () => {
 
     // Обработчик кнопки "Найти"
     const handleSearchClick = () => {
-        dispatch(setSearchTerm(localInput)); // Отправляем в Redux -> срабатывает useEffect
+        dispatch(setSearchTerm(localInput));
     };
 
-    // Обработчик нажатия Enter
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') {
             handleSearchClick();
@@ -64,7 +62,6 @@ export const ServicesPage: React.FC = () => {
         setIsMock(false);
         
         const params = new URLSearchParams();
-        // Используем searchTerm из Redux (который обновился по кнопке)
         if (searchTerm) params.append('filter', searchTerm);
 
         const url = `/api/letters?${params.toString()}`;
@@ -97,13 +94,10 @@ export const ServicesPage: React.FC = () => {
         } catch (error) {
             console.error("Mock mode enabled:", error);
             setIsMock(true);
-            
             let filteredMock = MOCK_LETTERS;
-            // Фильтрация моков тоже только по searchTerm
             if (searchTerm) {
                 filteredMock = filteredMock.filter(l => l.name.toLowerCase().includes(searchTerm.toLowerCase()));
             }
-
             setLetters(filteredMock.map(letter => ({
                 ...letter,
                 imageURL: letter.imageURL.startsWith('http') ? letter.imageURL : MINIO_BASE_URL + letter.imageURL.split('/').pop()
@@ -113,7 +107,6 @@ export const ServicesPage: React.FC = () => {
         }
     };
 
-    // useEffect реагирует только когда меняется searchTerm в Redux (после нажатия кнопки)
     useEffect(() => {
         fetchLetters();
         fetchOrderCount();
@@ -141,35 +134,23 @@ export const ServicesPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* 
-               ОБЕРТКА ДЛЯ ЗАКРЕПЛЕНИЯ (STICKY) 
-               Включает в себя хлебные крошки и блок управления 
-            */}
-            <div className="sticky-controls-area">
-                <CustomBreadcrumbs />
+            {/* 1. Хлебные крошки сразу под хедером */}
+            <CustomBreadcrumbs />
 
-                <div className="title-row" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                    
-                    <div className="title-header-block" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <h1>Список признаков</h1>
-                        
-                        {/* Корзина справа */}
-                        <Link to="/manuscripts/1" className={`order-link ${totalOrderCount === 0 ? 'disabled' : ''}`}>
-                            <img src={totalOrderCount > 0 ? MATRYOSHKA_ACTIVE_URL : MATRYOSHKA_INACTIVE_URL} alt="Basket" className="order-icon" />
-                            {totalOrderCount > 0 && <span className="order-count">{totalOrderCount}</span>}
-                        </Link>
-                    </div>
-
-                    {/* Поиск с кнопкой */}
-                    <div className="search-block" style={{ display: 'flex', gap: '10px', width: '100%' }}>
+            {/* 2. Строка с заголовком и управлением */}
+            <div className="title-row">
+                <h1>Список признаков</h1>
+                
+                <div className="title-controls">
+                    {/* Группа поиска */}
+                    <div style={{ display: 'flex', gap: '10px', flex: 1 }}>
                         <Form.Control 
                             type="text" 
-                            placeholder="Введите название..." 
+                            placeholder="Название..." 
                             value={localInput}
                             onChange={(e) => setLocalInput(e.target.value)}
                             onKeyDown={handleKeyDown}
                             className="search-input"
-                            style={{ flex: 1 }} // Занимает всё место
                         />
                         <Button 
                             variant="warning" 
@@ -179,10 +160,15 @@ export const ServicesPage: React.FC = () => {
                             Найти
                         </Button>
                     </div>
+
+                    {/* Корзина */}
+                    <Link to="/manuscripts/1" className={`order-link ${totalOrderCount === 0 ? 'disabled' : ''}`}>
+                        <img src={totalOrderCount > 0 ? MATRYOSHKA_ACTIVE_URL : MATRYOSHKA_INACTIVE_URL} alt="Basket" className="order-icon" />
+                        {totalOrderCount > 0 && <span className="order-count">{totalOrderCount}</span>}
+                    </Link>
                 </div>
             </div>
 
-            {/* Контент скроллится ПОД закрепленным блоком */}
             {isMock && <div style={{ textAlign: 'center', color: '#f2d70a', margin: '10px' }}>⚠️ Mock-режим</div>}
             
             <div className="grid">
