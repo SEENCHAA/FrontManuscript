@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom'; 
-import { Spinner, Form, Row, Col } from 'react-bootstrap';
+import { Spinner, Form, Button } from 'react-bootstrap';
 import { ServiceCard } from '../components/ServiceCard';
 import { CustomBreadcrumbs } from '../components/CustomBreadcrumbs';
 import { type Letter } from '../types';
@@ -9,8 +9,8 @@ import '../index.css';
 
 // --- REDUX ИМПОРТЫ ---
 import { useSelector, useDispatch } from 'react-redux';
-import {type RootState } from '../store/store'; // Убедитесь, что путь верный
-import { setSearchTerm, setMinYear, setMaxYear } from '../store/filterSlice'; // Убедитесь, что путь верный
+import { type RootState } from '../store/store';
+import { setSearchTerm } from '../store/filterSlice';
 
 const MINIO_BUCKET = 'manuscripts';
 const MINIO_BASE_URL = `/${MINIO_BUCKET}/`;
@@ -19,18 +19,30 @@ const MATRYOSHKA_ACTIVE_URL = MINIO_BASE_URL + 'icons8-матрешка-48.png';
 const MATRYOSHKA_INACTIVE_URL = MINIO_BASE_URL + 'icons8-matryoshka-unaktiv.png';
 
 export const ServicesPage: React.FC = () => {
-    // --- ПОДКЛЮЧЕНИЕ REDUX ---
     const dispatch = useDispatch();
-    // Достаем значения фильтров из глобального хранилища
-    const { searchTerm, minYear, maxYear } = useSelector((state: RootState) => state.filters);
+    // Берем "глобальное" значение поиска (которое уже было отправлено по кнопке)
+    const { searchTerm } = useSelector((state: RootState) => state.filters);
 
-    // Локальные состояния (только для данных и UI)
+    // Локальное состояние для инпута (чтобы не искать при каждом нажатии клавиши)
+    const [localInput, setLocalInput] = useState<string>(searchTerm);
+
     const [letters, setLetters] = useState<Letter[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [isMock, setIsMock] = useState<boolean>(false);
     const [totalOrderCount, setTotalOrderCount] = useState<number>(0);
 
-    // Получение количества в корзине
+    // Обработчик кнопки "Найти"
+    const handleSearchClick = () => {
+        dispatch(setSearchTerm(localInput)); // Отправляем в Redux -> срабатывает useEffect
+    };
+
+    // Обработчик нажатия Enter
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter') {
+            handleSearchClick();
+        }
+    };
+
     const fetchOrderCount = async () => {
         const token = localStorage.getItem('token');
         if (!token) { setTotalOrderCount(0); return; }
@@ -47,15 +59,13 @@ export const ServicesPage: React.FC = () => {
         } catch (e) { console.error(e); }
     };
     
-    // Загрузка писем с учетом фильтров из Redux
     const fetchLetters = async () => {
         setLoading(true);
         setIsMock(false);
         
         const params = new URLSearchParams();
+        // Используем searchTerm из Redux (который обновился по кнопке)
         if (searchTerm) params.append('filter', searchTerm);
-        if (minYear) params.append('min_year', minYear);
-        if (maxYear) params.append('max_year', maxYear);
 
         const url = `/api/letters?${params.toString()}`;
 
@@ -89,9 +99,10 @@ export const ServicesPage: React.FC = () => {
             setIsMock(true);
             
             let filteredMock = MOCK_LETTERS;
-            if (searchTerm) filteredMock = filteredMock.filter(l => l.name.toLowerCase().includes(searchTerm.toLowerCase()));
-            if (minYear) filteredMock = filteredMock.filter(l => l.periodStart >= parseInt(minYear));
-            if (maxYear) filteredMock = filteredMock.filter(l => l.periodEnd <= parseInt(maxYear));
+            // Фильтрация моков тоже только по searchTerm
+            if (searchTerm) {
+                filteredMock = filteredMock.filter(l => l.name.toLowerCase().includes(searchTerm.toLowerCase()));
+            }
 
             setLetters(filteredMock.map(letter => ({
                 ...letter,
@@ -102,11 +113,11 @@ export const ServicesPage: React.FC = () => {
         }
     };
 
-    // useEffect следит за переменными из Redux
+    // useEffect реагирует только когда меняется searchTerm в Redux (после нажатия кнопки)
     useEffect(() => {
         fetchLetters();
         fetchOrderCount();
-    }, [searchTerm, minYear, maxYear]); 
+    }, [searchTerm]); 
 
     const handleAddLetterToManuscript = async (letterID: number) => {
         const token = localStorage.getItem('token');
@@ -127,61 +138,51 @@ export const ServicesPage: React.FC = () => {
                     <Link to="/">
                         <img src={LOGO_URL} alt="Логотип" className="logo" />
                     </Link>
-                    <nav style={{ marginLeft: '30px', display: 'flex', gap: '20px' }}>
-                        <Link to="/" style={{ color: '#fff', fontSize: '18px' }}>Главная</Link>
-                        <Link to="/services" style={{ color: '#f2d70a', fontSize: '18px', textDecoration: 'underline' }}>Услуги</Link>
-                    </nav>
                 </div>
             </div>
 
-            <CustomBreadcrumbs />
+            {/* 
+               ОБЕРТКА ДЛЯ ЗАКРЕПЛЕНИЯ (STICKY) 
+               Включает в себя хлебные крошки и блок управления 
+            */}
+            <div className="sticky-controls-area">
+                <CustomBreadcrumbs />
 
-            <div className="title-row" style={{ display: 'block' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                    <h1>Список признаков</h1>
-                     <Link to="/manuscripts/1" className={`order-link ${totalOrderCount === 0 ? 'disabled' : ''}`}>
-                        <img src={totalOrderCount > 0 ? MATRYOSHKA_ACTIVE_URL : MATRYOSHKA_INACTIVE_URL} alt="Basket" className="order-icon" />
-                        {totalOrderCount > 0 && <span className="order-count">{totalOrderCount}</span>}
-                    </Link>
-                </div>
+                <div className="title-row" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                    
+                    <div className="title-header-block" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h1>Список признаков</h1>
+                        
+                        {/* Корзина справа */}
+                        <Link to="/manuscripts/1" className={`order-link ${totalOrderCount === 0 ? 'disabled' : ''}`}>
+                            <img src={totalOrderCount > 0 ? MATRYOSHKA_ACTIVE_URL : MATRYOSHKA_INACTIVE_URL} alt="Basket" className="order-icon" />
+                            {totalOrderCount > 0 && <span className="order-count">{totalOrderCount}</span>}
+                        </Link>
+                    </div>
 
-                <div style={{ background: '#1D1D1D', padding: '20px', borderRadius: '8px' }}>
-                    <Row>
-                        <Col md={4}>
-                            <Form.Control 
-                                type="text" 
-                                placeholder="Поиск по названию..." 
-                                value={searchTerm}
-                                // ВАЖНО: Отправляем Action в Redux
-                                onChange={(e) => dispatch(setSearchTerm(e.target.value))}
-                                style={{ background: '#333', color: '#fff', border: 'none' }}
-                            />
-                        </Col>
-                        <Col md={3}>
-                            <Form.Control 
-                                type="number" 
-                                placeholder="Год от" 
-                                value={minYear}
-                                onChange={(e) => dispatch(setMinYear(e.target.value))}
-                                style={{ background: '#333', color: '#fff', border: 'none' }}
-                            />
-                        </Col>
-                        <Col md={3}>
-                            <Form.Control 
-                                type="number" 
-                                placeholder="Год до" 
-                                value={maxYear}
-                                onChange={(e) => dispatch(setMaxYear(e.target.value))}
-                                style={{ background: '#333', color: '#fff', border: 'none' }}
-                            />
-                        </Col>
-                        <Col md={2} style={{ display: 'flex', alignItems: 'center' }}>
-                            <span style={{ color: '#B6BCBF', fontSize: '14px' }}>Найдено: {letters.length}</span>
-                        </Col>
-                    </Row>
+                    {/* Поиск с кнопкой */}
+                    <div className="search-block" style={{ display: 'flex', gap: '10px', width: '100%' }}>
+                        <Form.Control 
+                            type="text" 
+                            placeholder="Введите название..." 
+                            value={localInput}
+                            onChange={(e) => setLocalInput(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            className="search-input"
+                            style={{ flex: 1 }} // Занимает всё место
+                        />
+                        <Button 
+                            variant="warning" 
+                            onClick={handleSearchClick}
+                            style={{ fontWeight: 'bold' }}
+                        >
+                            Найти
+                        </Button>
+                    </div>
                 </div>
             </div>
 
+            {/* Контент скроллится ПОД закрепленным блоком */}
             {isMock && <div style={{ textAlign: 'center', color: '#f2d70a', margin: '10px' }}>⚠️ Mock-режим</div>}
             
             <div className="grid">

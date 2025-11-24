@@ -687,3 +687,30 @@ button.card-add:hover {
     color: #fff !important;
     cursor: default;
 }
+
+
+
+.sticky-controls-area {
+    position: sticky; 
+   
+    top: 80px;       
+    z-index: 900;    
+    background-color: #000; 
+    padding-bottom: 15px;   
+    border-bottom: 1px solid #333; 
+    margin-top: -20px; 
+    padding-top: 20px;
+}
+
+
+@media (min-width: 768px) {
+    .sticky-controls-area {
+        top: 120px; 
+    }
+    
+    
+    .sticky-controls-area .custom-breadcrumbs {
+        margin-top: 0 !important; 
+        padding-top: 10px !important;
+    }
+}
