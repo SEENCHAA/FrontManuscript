@@ -2,9 +2,11 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// https://vitejs.dev/config/
+const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
+
 export default defineConfig({
-  base: '/FrontManuscript/',
+  base: isGitHubPages ? '/FrontManuscript/' : '/',
+
   plugins: [
     react(),
     VitePWA({
@@ -38,17 +40,15 @@ export default defineConfig({
     })
   ],
   server: {
-    // Разрешаем Vite слушать сеть (нужно для доступа с телефона/Tauri)
     host: '0.0.0.0', 
     proxy: {
       '/api': {
-        // Указываем ваш реальный IP и порт бекенда
+        // Убедитесь, что здесь стоит ВАШ IP, если показываете Tauri
         target: 'http://172.20.10.3:8081', 
         changeOrigin: true,
         secure: false,
       },
       '/manuscripts': {
-        // MinIO тоже ищем по этому IP
         target: 'http://172.20.10.3:9000',
         changeOrigin: true,
         secure: false,
@@ -56,4 +56,3 @@ export default defineConfig({
     }
   }
 })
-  
