@@ -38,17 +38,22 @@ export default defineConfig({
     })
   ],
   server: {
+    // Разрешаем Vite слушать сеть (нужно для доступа с телефона/Tauri)
+    host: '0.0.0.0', 
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8081',
+        // Указываем ваш реальный IP и порт бекенда
+        target: 'http://172.20.10.3:8081', 
         changeOrigin: true,
         secure: false,
       },
       '/manuscripts': {
-        target: 'http://127.0.0.1:9000',
+        // MinIO тоже ищем по этому IP
+        target: 'http://172.20.10.3:9000',
         changeOrigin: true,
         secure: false,
       }
     }
   }
-})  
+})
+  

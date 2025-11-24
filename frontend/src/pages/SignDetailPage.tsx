@@ -9,7 +9,7 @@ const MINIO_BUCKET = 'manuscripts';
 const MINIO_BASE_URL = `/${MINIO_BUCKET}/`;
 
 const LOGO_URL = MINIO_BASE_URL + 'british-museum-logo.svg';
-const BACK_ICON_URL = MINIO_BASE_URL + 'icons8-назад-64.png'; 
+
 const PLACEHOLDER_URL = MINIO_BASE_URL + 'placeholder.jpg'; 
 
 export const SignDetailPage: React.FC = () => {

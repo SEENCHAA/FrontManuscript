@@ -14,7 +14,7 @@ interface ServiceCardProps {
     onAdd: (id: number) => void;
 }
 
-export const ServiceCard: React.FC<ServiceCardProps> = ({ letter, onAdd }) => {
+export const ServiceCard: React.FC<ServiceCardProps> = ({ letter }) => {
     const imageUrl = letter.imageURL || PLACEHOLDER_URL;
 
     return (
