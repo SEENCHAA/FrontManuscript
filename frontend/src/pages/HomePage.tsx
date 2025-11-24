@@ -2,25 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { Carousel, Nav, Navbar, Container, NavDropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { type Letter } from '../types';
+import { MOCK_LETTERS } from '../mockData';
 import '../index.css';
 
+const APP_BASE = import.meta.env.BASE_URL;
 const MINIO_BUCKET = 'manuscripts';
 const MINIO_BASE_URL = `/${MINIO_BUCKET}/`;
-const LOGO_URL = MINIO_BASE_URL + 'british-museum-logo.svg';
+const LOGO_URL = `${APP_BASE}british-museum-logo.svg`;
 
 export const HomePage: React.FC = () => {
     const [slides, setSlides] = useState<Letter[]>([]);
 
-    // Загружаем данные для карусели (берем первые 5 букв)
     useEffect(() => {
         const fetchSlides = async () => {
             try {
-                // Запрашиваем список без фильтров
                 const response = await fetch('/api/letters');
                 if (response.ok) {
                     const rawData = await response.json();
-                    
-                    // Маппим данные (как делали в ServicesPage)
                     const processed: Letter[] = rawData.slice(0, 5).map((item: any) => {
                         let img = item.ImageURL || "";
                         if (img.includes('127.0.0.1:9000')) {
@@ -33,14 +31,20 @@ export const HomePage: React.FC = () => {
                             name: item.Name,
                             description: item.Description,
                             imageURL: img,
-                            // остальные поля не важны для слайдера
                             details: "", periodStart: 0, periodEnd: 0, isActive: true
                         };
                     });
                     setSlides(processed);
+                } else {
+                    throw new Error("Failed to load");
                 }
             } catch (e) {
-                console.error("Ошибка загрузки слайдов", e);
+                console.error("Using mocks for slides");
+                const mockSlides = MOCK_LETTERS.slice(0, 5).map(l => ({
+                    ...l,
+                    imageURL: `${APP_BASE}${l.imageURL}`
+                }));
+                setSlides(mockSlides);
             }
         };
         fetchSlides();
@@ -48,52 +52,51 @@ export const HomePage: React.FC = () => {
 
     return (
         <>
-            {/* Хедер с выпадающим меню */}
-            <Navbar className="site-header" variant="dark" expand="lg" style={{position: 'fixed', top: 0, width: '100%', zIndex: 1000}}>
+            <Navbar 
+                variant="dark" 
+                expand="lg" 
+                className="site-header" 
+                style={{ position: 'fixed', top: 0, width: '100%', zIndex: 1000, padding: '0 35px' }}
+            >
                 <Container fluid>
                     <Navbar.Brand as={Link} to="/">
                         <img src={LOGO_URL} alt="Логотип" className="logo" />
                     </Navbar.Brand>
-                    
-                    {/* Кнопка "бургер" для мобильных */}
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                    
                     <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
                         <Nav>
-                            {/* Выпадающее меню */}
-                            <NavDropdown title="Меню" id="basic-nav-dropdown" menuVariant="dark" align="end">
+                            <NavDropdown 
+                                title={<span style={{ color: '#fff', fontSize: '18px' }}>Меню</span>} 
+                                id="basic-nav-dropdown" 
+                                menuVariant="dark" 
+                                align="end"
+                            >
                                 <NavDropdown.Item as={Link} to="/services">Список услуг</NavDropdown.Item>
                                 <NavDropdown.Divider />
-                                <NavDropdown.Item as={Link} to="/login">Вход</NavDropdown.Item>
-                                <NavDropdown.Item as={Link} to="/register">Регистрация</NavDropdown.Item>
                             </NavDropdown>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
 
-            {/* Контент главной страницы */}
-            <div className="home-container" style={{ 
-                maxWidth: '1000px', 
-                margin: '140px auto 50px', // Отступ сверху, так как хедер фиксирован
-                textAlign: 'center', 
-                padding: '20px' 
-            }}>
-                <h1 style={{ fontSize: '48px', color: '#fff', marginBottom: '30px' }}>
+            {/* Убрали inline styles, теперь всё управляется классом .home-container */}
+            <div className="home-container">
+                <h1 style={{ fontSize: '42px', color: '#fff', marginBottom: '20px' }}>
                     Анализ древнерусских рукописей
                 </h1>
                 
-                <p style={{ fontSize: '20px', color: '#B6BCBF', lineHeight: '1.6', marginBottom: '40px' }}>
-                    Наш сервис помогает исследователям определять временной период написания документов.
-                    Ниже представлены примеры анализируемых признаков.
+                <p style={{ fontSize: '18px', color: '#B6BCBF', lineHeight: '1.6', marginBottom: '30px' }}>
+                    Наш сервис помогает исследователям и историкам определять временной период написания документов 
+                    на основе палеографического анализа начертания букв.
                 </p>
 
-                {/* Карусель (Слайдер) */}
+                <h3 style={{ color: '#f2d70a', marginBottom: '20px' }}>Примеры признаков</h3>
+                
                 {slides.length > 0 ? (
-                    <Carousel style={{ maxWidth: '800px', margin: '0 auto' }}>
+                    <Carousel className="carousel-container">
                         {slides.map(slide => (
                             <Carousel.Item key={slide.id}>
-                                <div style={{ height: '400px', background: '#1D1D1D', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px' }}>
+                                <div className="carousel-image-wrapper">
                                     <img
                                         className="d-block"
                                         src={slide.imageURL}
@@ -101,7 +104,7 @@ export const HomePage: React.FC = () => {
                                         style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
                                     />
                                 </div>
-                                <Carousel.Caption style={{ background: 'rgba(0,0,0,0.7)', borderRadius: '8px' }}>
+                                <Carousel.Caption style={{ background: 'rgba(0,0,0,0.8)', borderRadius: '10px' }}>
                                     <h3>{slide.name}</h3>
                                     <p>{slide.description}</p>
                                 </Carousel.Caption>
@@ -109,7 +112,7 @@ export const HomePage: React.FC = () => {
                         ))}
                     </Carousel>
                 ) : (
-                    <p style={{color: '#fff'}}>Загрузка примеров...</p>
+                    <p style={{color: '#B6BCBF'}}>Загрузка примеров...</p>
                 )}
             </div>
         </>

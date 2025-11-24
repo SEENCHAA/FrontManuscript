@@ -7,38 +7,32 @@ import { type Letter } from '../types';
 import { MOCK_LETTERS } from '../mockData'; 
 import '../index.css';
 
-// --- REDUX ИМПОРТЫ ---
 import { useSelector, useDispatch } from 'react-redux';
 import { type RootState } from '../store/store';
 import { setSearchTerm } from '../store/filterSlice';
 
-const MINIO_BUCKET = 'manuscripts';
-const MINIO_BASE_URL = `/${MINIO_BUCKET}/`;
-const LOGO_URL = MINIO_BASE_URL + 'british-museum-logo.svg';
-const MATRYOSHKA_ACTIVE_URL = MINIO_BASE_URL + 'icons8-матрешка-48.png';
-const MATRYOSHKA_INACTIVE_URL = MINIO_BASE_URL + 'icons8-matryoshka-unaktiv.png';
+const APP_BASE = import.meta.env.BASE_URL; 
+const MINIO_BASE_URL = `/${'manuscripts'}/`;
+
+const LOGO_URL = `${APP_BASE}british-museum-logo.svg`; 
+const MATRYOSHKA_ACTIVE_URL = `${APP_BASE}icons8-матрешка-48.png`; 
+const MATRYOSHKA_INACTIVE_URL = `${APP_BASE}icons8-matryoshka-unaktiv.png`;
 
 export const ServicesPage: React.FC = () => {
     const dispatch = useDispatch();
     const { searchTerm } = useSelector((state: RootState) => state.filters);
-
-    // Локальный инпут для поиска по кнопке
     const [localInput, setLocalInput] = useState<string>(searchTerm);
-
     const [letters, setLetters] = useState<Letter[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [isMock, setIsMock] = useState<boolean>(false);
     const [totalOrderCount, setTotalOrderCount] = useState<number>(0);
 
-    // Обработчик кнопки "Найти"
     const handleSearchClick = () => {
         dispatch(setSearchTerm(localInput));
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') {
-            handleSearchClick();
-        }
+        if (e.key === 'Enter') handleSearchClick();
     };
 
     const fetchOrderCount = async () => {
@@ -92,15 +86,17 @@ export const ServicesPage: React.FC = () => {
             });
             setLetters(processedLetters);
         } catch (error) {
-            console.error("Mock mode enabled:", error);
+            console.error(error);
             setIsMock(true);
+            
             let filteredMock = MOCK_LETTERS;
             if (searchTerm) {
                 filteredMock = filteredMock.filter(l => l.name.toLowerCase().includes(searchTerm.toLowerCase()));
             }
+
             setLetters(filteredMock.map(letter => ({
                 ...letter,
-                imageURL: letter.imageURL.startsWith('http') ? letter.imageURL : MINIO_BASE_URL + letter.imageURL.split('/').pop()
+                imageURL: `${APP_BASE}${letter.imageURL}`
             })));
         } finally {
             setLoading(false);
@@ -134,15 +130,12 @@ export const ServicesPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* 1. Хлебные крошки сразу под хедером */}
             <CustomBreadcrumbs />
 
-            {/* 2. Строка с заголовком и управлением */}
             <div className="title-row">
                 <h1>Список признаков</h1>
                 
                 <div className="title-controls">
-                    {/* Группа поиска */}
                     <div style={{ display: 'flex', gap: '10px', flex: 1 }}>
                         <Form.Control 
                             type="text" 
@@ -161,9 +154,12 @@ export const ServicesPage: React.FC = () => {
                         </Button>
                     </div>
 
-                    {/* Корзина */}
                     <Link to="/manuscripts/1" className={`order-link ${totalOrderCount === 0 ? 'disabled' : ''}`}>
-                        <img src={totalOrderCount > 0 ? MATRYOSHKA_ACTIVE_URL : MATRYOSHKA_INACTIVE_URL} alt="Basket" className="order-icon" />
+                        <img 
+                            src={totalOrderCount > 0 ? MATRYOSHKA_ACTIVE_URL : MATRYOSHKA_INACTIVE_URL} 
+                            alt="Basket" 
+                            className="order-icon" 
+                        />
                         {totalOrderCount > 0 && <span className="order-count">{totalOrderCount}</span>}
                     </Link>
                 </div>

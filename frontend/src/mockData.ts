@@ -1,4 +1,5 @@
 import { type Letter } from './types';
+const MOCK_IMAGE = "mock-card.jpg"
 
 
 export const MOCK_LETTERS: Letter[] = [
@@ -9,7 +10,7 @@ export const MOCK_LETTERS: Letter[] = [
         details: "Заглушка для буквы Ять. Буква сохранялась до реформы 1918 года.",
         periodStart: 1000,
         periodEnd: 1750,
-        imageURL: "yat.jpg", 
+        imageURL: MOCK_IMAGE, 
         isActive: true,
     },
     {
@@ -19,7 +20,7 @@ export const MOCK_LETTERS: Letter[] = [
         details: "Заглушка для буквы Ижица. Была исключена из гражданского шрифта в 1735 году.",
         periodStart: 1000,
         periodEnd: 1700,
-        imageURL: "izhitsa.jpg", 
+        imageURL: MOCK_IMAGE, 
         isActive: true,
     },
     {
@@ -29,7 +30,7 @@ export const MOCK_LETTERS: Letter[] = [
         details: "Заглушка для буквы Фита. Использовалась для передачи греческого звука 'ф', заменена на 'ф' в 1918 году.",
         periodStart: 1000,
         periodEnd: 1918,
-        imageURL: "fita.jpg", 
+        imageURL: MOCK_IMAGE, 
         isActive: true,
     },
     {
@@ -39,7 +40,7 @@ export const MOCK_LETTERS: Letter[] = [
         details: "Заглушка для Твёрдого знака. После реформы его употребление было ограничено.",
         periodStart: 1000,
         periodEnd: 1918,
-        imageURL: "hardsign.jpg", 
+        imageURL: MOCK_IMAGE, 
         isActive: true,
     },
     {
@@ -49,7 +50,7 @@ export const MOCK_LETTERS: Letter[] = [
         details: "Заглушка для i десятеричного. Использовалась наряду с 'и', затем полностью упразднена.",
         periodStart: 1000,
         periodEnd: 1918,
-        imageURL: "decimalI.jpg", 
+        imageURL: MOCK_IMAGE, 
         isActive: true,
     },
     {
@@ -59,7 +60,7 @@ export const MOCK_LETTERS: Letter[] = [
         details: "Заглушка для буквы Кси. Пришла из греческого алфавита, обозначала 'кс'. Вышла из употребления к XVIII веку.",
         periodStart: 1000,
         periodEnd: 1700,
-        imageURL: "ksi.png", 
+        imageURL: MOCK_IMAGE, 
         isActive: true,
     }
 ];

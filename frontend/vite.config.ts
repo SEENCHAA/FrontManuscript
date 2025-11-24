@@ -48,12 +48,12 @@ export default defineConfig({
     host: '0.0.0.0', 
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8081', 
+        target: 'http://192.168.0.106:8081', 
         changeOrigin: true,
         secure: false,
       },
       '/manuscripts': {
-        target: 'http://127.0.0.1:9000',
+        target: 'http://192.168.0.106:9000',
         changeOrigin: true,
         secure: false,
       }

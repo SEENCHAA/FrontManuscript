@@ -1,13 +1,10 @@
-// src/components/ServiceCard.tsx
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { type Letter } from '../types';
 import '../index.css';
 
-const MINIO_BUCKET = 'manuscripts';
-const MINIO_BASE_URL = `/${MINIO_BUCKET}/`;
-const PLACEHOLDER_URL = MINIO_BASE_URL + 'placeholder.jpg';
+const APP_BASE = import.meta.env.BASE_URL;
+const PLACEHOLDER_URL = `${APP_BASE}placeholder.jpg`;
 
 interface ServiceCardProps {
     letter: Letter;
@@ -19,7 +16,6 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ letter }) => {
 
     return (
         <div className="card">
-            {/* ЛЕВАЯ СТОРОНА */}
             <div className="card-left">
                 <div>
                     <h3 className="card-title">{letter.name}</h3>
@@ -31,8 +27,6 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({ letter }) => {
                     </Link>
                 </div>
             </div>
-            
-            {/* ПРАВАЯ СТОРОНА */}
             <div className="card-right">
                 <img src={imageUrl} alt={letter.name} />
             </div>

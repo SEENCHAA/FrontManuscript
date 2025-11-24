@@ -667,3 +667,37 @@ button.card-add:hover {
     color: #fff !important;
     cursor: default;
 }
+
+/* ====== Стили для Главной страницы ====== */
+.home-container {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    padding: 20px;
+    /* Был огромный отступ, ставим маленький, так как body уже имеет padding */
+    margin-top: 20px; 
+    margin-bottom: 50px;
+}
+
+/* Адаптивность для карусели */
+.carousel-container {
+    max-width: 800px;
+    margin: 0 auto;
+    border: 1px solid #444;
+    border-radius: 8px;
+}
+
+.carousel-image-wrapper {
+    height: 250px; /* На мобильном поменьше */
+    background: #1D1D1D;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (min-width: 768px) {
+    .carousel-image-wrapper {
+        height: 400px; /* На ПК побольше */
+    }
+}
