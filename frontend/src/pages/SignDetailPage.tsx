@@ -10,6 +10,7 @@ const MINIO_BUCKET = 'manuscripts';
 const MINIO_BASE_URL = `/${MINIO_BUCKET}/`;
 
 const LOGO_URL = `${APP_BASE}british-museum-logo.svg`;
+const BACK_ICON_URL = `${APP_BASE}icons8-назад-64.png`; 
 const PLACEHOLDER_URL = `${APP_BASE}placeholder.jpg`; 
 
 export const SignDetailPage: React.FC = () => {
@@ -26,10 +27,13 @@ export const SignDetailPage: React.FC = () => {
 
             try {
                 const response = await fetch(url);
-                if (response.status === 404) { setError('Буква не найдена.'); return; }
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
                 const rawData = await response.json();
+                
                 let img = rawData.ImageURL || "";
                 if (img.includes('127.0.0.1:9000')) {
                     img = img.replace('http://127.0.0.1:9000', '');
@@ -59,7 +63,7 @@ export const SignDetailPage: React.FC = () => {
                             imageURL: `${APP_BASE}${mock.imageURL}`
                         });
                     } else {
-                        setError('Не удалось загрузить данные.');
+                        setError('Буква не найдена.');
                     }
                 }
             } finally {
