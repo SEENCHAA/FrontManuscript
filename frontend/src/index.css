@@ -216,7 +216,7 @@ input[type="submit"]:hover {
 @media (min-width: 768px) {
     .card {
         flex-direction: row !important;
-        width: 690px;
+        width: 100%;
         height: 430px;
         border-radius: 0;
     }
