@@ -2,10 +2,13 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+
 const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
+const BASE_URL = isGitHubPages ? '/FrontManuscript/' : '/';
 
 export default defineConfig({
-  base: isGitHubPages ? '/FrontManuscript/' : '/',
+
+  base: BASE_URL,
 
   plugins: [
     react(),
@@ -19,8 +22,10 @@ export default defineConfig({
         theme_color: '#000000',
         background_color: '#000000',
         display: 'standalone',
-        scope: '/',
-        start_url: '/',
+        
+        scope: BASE_URL,
+        start_url: BASE_URL,
+        
         orientation: 'portrait',
         icons: [
           {
@@ -43,13 +48,12 @@ export default defineConfig({
     host: '0.0.0.0', 
     proxy: {
       '/api': {
-        // Убедитесь, что здесь стоит ВАШ IP, если показываете Tauri
-        target: 'http://172.20.10.3:8081', 
+        target: 'http://127.0.0.1:8081', 
         changeOrigin: true,
         secure: false,
       },
       '/manuscripts': {
-        target: 'http://172.20.10.3:9000',
+        target: 'http://127.0.0.1:9000',
         changeOrigin: true,
         secure: false,
       }
