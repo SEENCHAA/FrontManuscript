@@ -1,0 +1,504 @@
+/* ====== common.css ====== */
+body {
+    background: #000 !important; /* ДОБАВЛЕНО !important */
+    color: #fff !important;      /* ДОБАВЛЕНО !important */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    padding-top: 120px;
+    min-height: 100vh;
+}
+
+a {
+    color: #5a5b3b;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #f2d70a;
+    text-decoration: underline;
+}
+
+button,
+input[type="submit"] {
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button:hover,
+input[type="submit"]:hover {
+    background: #444;
+}
+
+/* ====== Хедер ====== */
+.site-header {
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    padding: 10px 35px;
+    height: 120px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    box-sizing: border-box;
+}
+
+.site-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 95%;
+    height: 0.5px;
+    background-color: white;
+}
+
+.logo {
+    height: 100px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+/* ====== Строка заголовка (Title Row) ====== */
+.title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 20px 45px;
+    position: relative;
+}
+
+.title-row h1 {
+    margin: 0;
+    font-size: 32px;
+    color: #302f2f;
+}
+
+.title-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Центрированный вариант для Detail Page */
+.title-row.center {
+    justify-content: center;
+}
+
+.title-row.center h1 {
+    text-align: center;
+    flex: 1;
+}
+
+.title-row.center .title-controls {
+    position: absolute;
+    right: 45px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Поле поиска */
+.search-input {
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    font-size: 18px;
+    background: #222;
+    color: #fff;
+    width: 250px;
+}
+
+/* Иконки */
+.order-link {
+    position: relative;
+    display: inline-block;
+}
+
+.order-link.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.order-icon {
+    height: 50px;
+    width: 50px;
+}
+
+.order-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #f2d70a;
+    color: #000;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 50%;
+    min-width: 20px;
+    text-align: center;
+    line-height: 1;
+}
+
+.icon-back {
+    height: 50px; /* В signs.html было 50px для иконок в контролах */
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.icon-back:hover {
+    transform: scale(1.1);
+    opacity: 0.8;
+}
+
+/* ====== Сетка (index.css) ====== */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 690px); /* Фиксировано как в старом коде */
+    justify-content: center;
+    gap: 100px 70px;
+    margin: 50px 180px;
+}
+
+/* Карточка */
+.card {
+    display: flex !important;            /* Включаем Flexbox */
+    flex-direction: row !important;      /* Строго горизонтально */
+    flex-wrap: nowrap !important;        /* ЗАПРЕЩАЕМ ПЕРЕНОС НА НОВУЮ СТРОКУ */
+    background: #1D1D1D !important;
+    width: 690px;                        /* Фиксированная ширина карточки */
+    height: 430px;                       /* Фиксированная высота карточки */
+    overflow: hidden;
+    border-radius: 0;
+    padding: 0;
+    border: none !important;
+    box-shadow: none !important;
+    align-items: stretch;                /* Растянуть на всю высоту */
+}
+
+.card-left {
+    flex: 0 0 50% !important;            /* Жестко занимать 50% ширины */
+    max-width: 50% !important;           /* Не давать расширяться */
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    justify-content: space-between;
+}
+
+.card-title {
+    font-size: 42px;
+    color: #FFFFFF !important;
+    margin: 0 0 5px;
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 32px;
+    color: #B6BCBF;
+    flex-grow: 1;
+    margin-bottom: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.card-actions {
+    display: flex;
+    align-items: center;
+    gap: 80px;
+    margin-top: auto;
+}
+
+.card-detail {
+    font-size: 22px;
+    color: #FFFFFF;
+    text-decoration: none;
+    background: none;
+    padding: 0;
+}
+
+.card-detail:hover {
+    color: #f2d70a;
+    background: none;
+    text-decoration: underline;
+}
+
+button.card-add {
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    border: none;
+    background: #B6BCBF;
+    color: #000;
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease;
+    font-weight: normal;
+}
+
+button.card-add:hover {
+    transform: scale(1.1);
+    background: #d0d5d6;
+}
+
+.card-right {
+    flex: 0 0 50% !important;            /* Жестко занимать оставшиеся 50% */
+    max-width: 50% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    overflow: hidden;                    /* Обрезать все, что торчит */
+    background: #000;
+}
+
+.card-right img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;                   /* Обрезать лишнее, заполняя блок */
+    display: block;
+    border-radius: 0;
+}
+
+/* ====== Детальная страница (detail.css) ====== */
+.detail-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 60px;
+    margin: 40px 180px;
+    max-width: none; /* Сброс старого стиля React */
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+}
+
+.detail-left {
+    flex: 1;
+    text-align: center;
+}
+
+.detail-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    width: auto; /* Сброс React стиля */
+    border: none;
+    background: transparent;
+    padding: 0;
+}
+
+.detail-right {
+    flex: 1;
+    font-size: 20px;
+    line-height: 1.6;
+    color: #FFFFFF;
+}
+
+.detail-text {
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: #fff;
+}
+
+/* ====== Корзина (order.css) ====== */
+.order-container {
+    margin: 20px 0 100px 45px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.order-period {
+    background-color: #1D1D1D;
+    border-radius: 8px;
+    padding: 20px;
+    width: 1400px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.order-period h3 {
+    font-size: 24px;
+    color: #fff;
+    margin: 0;
+}
+
+.order-period-value {
+    margin-left: 20px;
+    font-size: 20px;
+    color: #B6BCBF;
+    font-style: italic;
+}
+
+.order-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1D1D1D;
+    border-radius: 8px;
+    padding: 15px 20px;
+    width: 1400px;
+    gap: 20px;
+    box-shadow: none;
+}
+
+.order-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+}
+
+.order-info img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    background: transparent;
+    padding: 0;
+}
+
+.order-text h3 {
+    margin: 0;
+    font-size: 22px;
+    color: #fff;
+}
+
+.order-text p {
+    margin: 5px 0 0;
+    font-size: 16px;
+    color: #B6BCBF;
+}
+
+.count-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.count-input {
+    width: 60px;
+    padding: 6px;
+    border-radius: 5px;
+    border: 1px solid #444;
+    text-align: center;
+    background: #2a2a2a;
+    color: #fff;
+}
+
+.update-btn {
+    padding: 8px 15px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    background: #B6BCBF;
+    color: #000;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-weight: normal;
+}
+
+.update-btn:hover {
+    background: #d0d5d6;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    padding: 0;
+}
+
+.delete-btn img {
+    width: 30px;
+    height: 30px;
+}
+
+.delete-btn:hover {
+    opacity: 0.7;
+    background: none;
+}
+
+.order-empty {
+    background: #1D1D1D;
+    border-radius: 8px;
+    width: 1400px;
+    padding: 20px;
+    color: #B6BCBF;
+    text-align: left;
+    box-sizing: border-box;
+}
+
+.order-total {
+    margin-left: 45px;
+}
+
+.delete-btn-main {
+    background: #333; /* Базовый стиль кнопки из common */
+    color: #fff;
+}
+
+/* ====== Хлебные крошки (Custom Breadcrumbs) ====== */
+
+/* Контейнер */
+.custom-breadcrumbs {
+    background-color: transparent !important; /* Прозрачный фон */
+    padding: 0 45px !important;               /* Отступ слева как у заголовка */
+    margin-top: 20px;                        /* Отступ от верхнего хедера */
+    margin-bottom: -10px;                     /* Чуть ближе к заголовку страницы */
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 16px;
+}
+
+/* Элемент списка */
+.custom-breadcrumb-item {
+    display: flex;
+    align-items: center;
+}
+
+/* Разделитель (слэш) */
+.separator {
+    margin: 0 10px;
+    color: #666; /* Темно-серый цвет разделителя */
+    user-select: none;
+}
+
+/* Ссылка (неактивная часть пути) */
+.breadcrumb-link {
+    color: #B6BCBF !important; /* Серый текст */
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.breadcrumb-link:hover {
+    color: #f2d70a !important; /* Желтый при наведении */
+    text-decoration: underline;
+}
+
+/* Текущая страница (активная часть, не кликабельная) */
+.breadcrumb-current {
+    color: #fff !important; /* Белый цвет */
+    cursor: default;
+}
