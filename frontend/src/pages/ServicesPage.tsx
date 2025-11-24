@@ -9,7 +9,7 @@ import '../index.css';
 
 // --- REDUX ИМПОРТЫ ---
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store/store'; // Убедитесь, что путь верный
+import {type RootState } from '../store/store'; // Убедитесь, что путь верный
 import { setSearchTerm, setMinYear, setMaxYear } from '../store/filterSlice'; // Убедитесь, что путь верный
 
 const MINIO_BUCKET = 'manuscripts';

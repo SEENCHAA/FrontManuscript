@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.0",
+    "@tauri-apps/api": "^2.9.0",
+    "@tauri-apps/cli": "^2.9.4",
     "bootstrap": "^5.3.8",
     "react": "^19.2.0",
     "react-bootstrap": "^2.10.10",
