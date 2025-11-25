@@ -1,15 +1,25 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import os from 'os'
 
+function getLocalIP() {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name]!) {
+      if (iface.family === 'IPv4' && !iface.internal) {
+        return iface.address;
+      }
+    }
+  }
+  return '127.0.0.1';
+}
 
-const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
-const BASE_URL = isGitHubPages ? '/FrontManuscript/' : '/';
+const myIP = getLocalIP();
+console.log(`Detected Local IP: ${myIP}`);
 
 export default defineConfig({
-
   base: '/',
-
   plugins: [
     react(),
     VitePWA({
@@ -22,10 +32,8 @@ export default defineConfig({
         theme_color: '#000000',
         background_color: '#000000',
         display: 'standalone',
-        
-        scope: BASE_URL,
-        start_url: BASE_URL,
-        
+        scope: '/',
+        start_url: '/',
         orientation: 'portrait',
         icons: [
           {
@@ -45,15 +53,15 @@ export default defineConfig({
     })
   ],
   server: {
-    host: '0.0.0.0', 
+    host: '0.0.0.0',
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8081', 
+        target: `http://${myIP}:8081`,
         changeOrigin: true,
         secure: false,
       },
       '/manuscripts': {
-        target: 'http://127.0.0.1:9000',
+        target: `http://${myIP}:9000`,
         changeOrigin: true,
         secure: false,
       }
