@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     # Указываем ветки, при изменении которых будет запускаться деплой
-    branches: [ "main", "master", "feature/react-spa-basis", "feature/lab6-pwa-redux" ]
+    branches: [ lab6-gh-pages ]
 
 # Разрешения для GITHUB_TOKEN
 permissions:

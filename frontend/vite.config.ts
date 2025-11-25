@@ -8,7 +8,7 @@ const BASE_URL = isGitHubPages ? '/FrontManuscript/' : '/';
 
 export default defineConfig({
 
-  base: '/',
+  base: '/FrontManuscript/',
 
   plugins: [
     react(),
