@@ -448,7 +448,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Список рукописей\" // \u003c-- ИСПРАВЛЕНО",
+                        "description": "Список рукописей",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -1512,7 +1512,7 @@ var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8081",
 	BasePath:         "/api",
-	Schemes:          []string{"http"},
+	Schemes:          []string{},
 	Title:            "Manuscript API",
 	Description:      "API для работы с рукописями, письмами и пользователями.",
 	InfoInstanceName: "swagger",

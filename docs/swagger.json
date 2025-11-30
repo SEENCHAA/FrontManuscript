@@ -1,7 +1,4 @@
 {
-    "schemes": [
-        "http"
-    ],
     "swagger": "2.0",
     "info": {
         "description": "API для работы с рукописями, письмами и пользователями.",
@@ -445,7 +442,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Список рукописей\" // \u003c-- ИСПРАВЛЕНО",
+                        "description": "Список рукописей",
                         "schema": {
                             "type": "array",
                             "items": {

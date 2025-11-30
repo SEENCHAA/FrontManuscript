@@ -1,25 +1,22 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
-import os from 'os'
 
-function getLocalIP() {
-  const interfaces = os.networkInterfaces();
-  for (const name of Object.keys(interfaces)) {
-    for (const iface of interfaces[name]!) {
-      if (iface.family === 'IPv4' && !iface.internal) {
-        return iface.address;
-      }
-    }
-  }
-  return '127.0.0.1';
-}
+// ТВОЙ РЕАЛЬНЫЙ IP (из ipconfig)
+const myIP = '192.168.0.106'; 
 
-const myIP = getLocalIP();
-console.log(`Detected Local IP: ${myIP}`);
+// Определяем, где мы: GitHub Pages или локалка
+const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
+const BASE_URL = isGitHubPages ? '/FrontManuscript/' : '/';
 
 export default defineConfig({
-  base: '/',
+  base: BASE_URL,
+  
+  // ВОТ ЭТО САМОЕ ВАЖНОЕ: Передаем IP внутрь React-приложения
+  define: {
+    '__SERVER_IP__': JSON.stringify(myIP),
+  },
+
   plugins: [
     react(),
     VitePWA({
@@ -28,26 +25,15 @@ export default defineConfig({
       manifest: {
         name: 'Manuscript Analyzer',
         short_name: 'Manuscript',
-        description: 'App for identifying ancient Russian manuscript periods',
         theme_color: '#000000',
         background_color: '#000000',
         display: 'standalone',
-        scope: '/',
-        start_url: '/',
+        scope: BASE_URL,
+        start_url: BASE_URL,
         orientation: 'portrait',
         icons: [
-          {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any maskable'
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
+          { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png', purpose: 'any maskable' },
+          { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
         ]
       }
     })

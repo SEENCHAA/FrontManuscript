@@ -3,14 +3,11 @@ import { useParams, Link } from 'react-router-dom';
 import { type Letter } from '../types';
 import { CustomBreadcrumbs } from '../components/CustomBreadcrumbs';
 import { MOCK_LETTERS } from '../mockData';
+import { API_URL, MINIO_URL } from '../config';
 import '../index.css';
 
 const APP_BASE = import.meta.env.BASE_URL;
-const MINIO_BUCKET = 'manuscripts';
-const MINIO_BASE_URL = `/${MINIO_BUCKET}/`;
-
 const LOGO_URL = `${APP_BASE}british-museum-logo.svg`;
-
 const PLACEHOLDER_URL = `${APP_BASE}placeholder.jpg`; 
 
 export const SignDetailPage: React.FC = () => {
@@ -23,7 +20,7 @@ export const SignDetailPage: React.FC = () => {
         const fetchLetterDetail = async () => {
             setLoading(true);
             setError(null);
-            const url = `/api/letters/${id}`;
+            const url = `${API_URL}/letters/${id}`;
 
             try {
                 const response = await fetch(url);
@@ -35,10 +32,13 @@ export const SignDetailPage: React.FC = () => {
                 const rawData = await response.json();
                 
                 let img = rawData.ImageURL || "";
-                if (img.includes('127.0.0.1:9000')) {
-                    img = img.replace('http://127.0.0.1:9000', '');
-                } else if (!img.startsWith('/') && !img.startsWith('http')) {
-                     img = MINIO_BASE_URL + img;
+                if (img.includes('/manuscripts/')) {
+                    const parts = img.split('/manuscripts/');
+                    if (parts.length > 1) {
+                        img = `${MINIO_URL}/${parts[1]}`;
+                    }
+                } else if (!img.startsWith('http')) {
+                    img = `${MINIO_URL}/${img.replace(/^\//, '')}`;
                 }
 
                 const processedLetter: Letter = {

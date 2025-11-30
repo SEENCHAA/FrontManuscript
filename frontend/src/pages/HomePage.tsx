@@ -5,9 +5,10 @@ import { type Letter } from '../types';
 import { MOCK_LETTERS } from '../mockData';
 import '../index.css';
 
+// ИМПОРТИРУЕМ НАШ ХАРДКОРНЫЙ URL
+import { API_URL, MINIO_URL } from '../config';
+
 const APP_BASE = import.meta.env.BASE_URL;
-const MINIO_BUCKET = 'manuscripts';
-const MINIO_BASE_URL = `/${MINIO_BUCKET}/`;
 const LOGO_URL = `${APP_BASE}british-museum-logo.svg`;
 
 export const HomePage: React.FC = () => {
@@ -16,16 +17,26 @@ export const HomePage: React.FC = () => {
     useEffect(() => {
         const fetchSlides = async () => {
             try {
-                const response = await fetch('/api/letters');
+                // ВАЖНО: Используем API_URL, а не просто '/api'
+                console.log("Fetching slides from:", `${API_URL}/letters`);
+                
+                const response = await fetch(`${API_URL}/letters`);
+                
                 if (response.ok) {
                     const rawData = await response.json();
                     const processed: Letter[] = rawData.slice(0, 5).map((item: any) => {
                         let img = item.ImageURL || "";
-                        if (img.includes('127.0.0.1:9000')) {
-                            img = img.replace('http://127.0.0.1:9000', '');
-                        } else if (!img.startsWith('/') && !img.startsWith('http')) {
-                            img = MINIO_BASE_URL + img;
+                        
+                        // Обработка картинок через MINIO_URL
+                        if (img.includes('/manuscripts/')) {
+                            const parts = img.split('/manuscripts/');
+                            if (parts.length > 1) {
+                                img = `${MINIO_URL}/${parts[1]}`;
+                            }
+                        } else if (!img.startsWith('http')) {
+                            img = `${MINIO_URL}/${img.replace(/^\//, '')}`;
                         }
+                        
                         return {
                             id: item.ID,
                             name: item.Name,
@@ -39,7 +50,7 @@ export const HomePage: React.FC = () => {
                     throw new Error("Failed to load");
                 }
             } catch (e) {
-                console.error("Using mocks for slides");
+                console.error("Using mocks for slides. Error:", e);
                 const mockSlides = MOCK_LETTERS.slice(0, 5).map(l => ({
                     ...l,
                     imageURL: `${APP_BASE}${l.imageURL}`
@@ -56,30 +67,28 @@ export const HomePage: React.FC = () => {
                 variant="dark" 
                 expand="lg" 
                 className="site-header" 
+                collapseOnSelect
                 style={{ position: 'fixed', top: 0, width: '100%', zIndex: 1000, padding: '0 35px' }}
             >
                 <Container fluid>
                     <Navbar.Brand as={Link} to="/">
                         <img src={LOGO_URL} alt="Логотип" className="logo" />
                     </Navbar.Brand>
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" style={{ border: 'none' }} />
                     <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
-                        <Nav>
-                            <NavDropdown 
-                                title={<span style={{ color: '#fff', fontSize: '18px' }}>Меню</span>} 
-                                id="basic-nav-dropdown" 
-                                menuVariant="dark" 
-                                align="end"
-                            >
+                        <Nav className="align-items-center">
+                            
+                            <NavDropdown title="Меню" id="basic-nav-dropdown" menuVariant="dark" align="end">
                                 <NavDropdown.Item as={Link} to="/services">Список услуг</NavDropdown.Item>
                                 <NavDropdown.Divider />
+                                <NavDropdown.Item as={Link} to="/login">Вход</NavDropdown.Item>
+                                <NavDropdown.Item as={Link} to="/register">Регистрация</NavDropdown.Item>
                             </NavDropdown>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
 
-            {/* Убрали inline styles, теперь всё управляется классом .home-container */}
             <div className="home-container">
                 <h1 style={{ fontSize: '42px', color: '#fff', marginBottom: '20px' }}>
                     Анализ древнерусских рукописей

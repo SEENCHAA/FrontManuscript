@@ -10,12 +10,11 @@ import '../index.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { type RootState } from '../store/store';
 import { setSearchTerm } from '../store/filterSlice';
+import { API_URL, MINIO_URL } from '../config';
 
-const APP_BASE = import.meta.env.BASE_URL; 
-const MINIO_BASE_URL = `/${'manuscripts'}/`;
-
-const LOGO_URL = `${APP_BASE}british-museum-logo.svg`; 
-const MATRYOSHKA_ACTIVE_URL = `${APP_BASE}icons8-матрешка-48.png`; 
+const APP_BASE = import.meta.env.BASE_URL;
+const LOGO_URL = `${APP_BASE}british-museum-logo.svg`;
+const MATRYOSHKA_ACTIVE_URL = `${APP_BASE}icons8-матрешка-48.png`;
 const MATRYOSHKA_INACTIVE_URL = `${APP_BASE}icons8-matryoshka-unaktiv.png`;
 
 export const ServicesPage: React.FC = () => {
@@ -39,7 +38,7 @@ export const ServicesPage: React.FC = () => {
         const token = localStorage.getItem('token');
         if (!token) { setTotalOrderCount(0); return; }
         try {
-            const response = await fetch('/api/manuscripts/basket', {
+            const response = await fetch(`${API_URL}/manuscripts/basket`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
@@ -58,7 +57,7 @@ export const ServicesPage: React.FC = () => {
         const params = new URLSearchParams();
         if (searchTerm) params.append('filter', searchTerm);
 
-        const url = `/api/letters?${params.toString()}`;
+        const url = `${API_URL}/letters?${params.toString()}`;
 
         try {
             const response = await fetch(url);
@@ -68,11 +67,16 @@ export const ServicesPage: React.FC = () => {
             
             const processedLetters: Letter[] = rawData.map((item: any) => {
                 let img = item.ImageURL || "";
-                if (img.includes('127.0.0.1:9000')) {
-                    img = img.replace('http://127.0.0.1:9000', '');
-                } else if (!img.startsWith('/') && !img.startsWith('http')) {
-                    img = MINIO_BASE_URL + img;
+                
+                if (img.includes('/manuscripts/')) {
+                    const parts = img.split('/manuscripts/');
+                    if (parts.length > 1) {
+                        img = `${MINIO_URL}/${parts[1]}`;
+                    }
+                } else if (!img.startsWith('http')) {
+                    img = `${MINIO_URL}/${img.replace(/^\//, '')}`;
                 }
+
                 return {
                     id: item.ID,
                     name: item.Name,
@@ -112,7 +116,7 @@ export const ServicesPage: React.FC = () => {
         const token = localStorage.getItem('token');
         if (!token) { alert('Войдите в систему'); return; }
         try {
-            const res = await fetch(`/api/letters/${letterID}/manuscript`, {
+            const res = await fetch(`${API_URL}/letters/${letterID}/manuscript`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` }
             });

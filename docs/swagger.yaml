@@ -506,7 +506,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Список рукописей" // <-- ИСПРАВЛЕНО
+          description: Список рукописей
           schema:
             items:
               $ref: '#/definitions/ds.ManuscriptListItemResponse'
@@ -985,8 +985,6 @@ paths:
       summary: Регистрация нового пользователя
       tags:
       - Users
-schemes:
-- http
 securityDefinitions:
   ApiKeyAuth:
     in: header

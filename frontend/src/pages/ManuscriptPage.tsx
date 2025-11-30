@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { CustomBreadcrumbs } from '../components/CustomBreadcrumbs'; // <--- ИМПОРТ
+import { CustomBreadcrumbs } from '../components/CustomBreadcrumbs';
+// ИМПОРТИРУЕМ КОНФИГ
+import { API_URL, MINIO_URL } from '../config'; 
 import '../index.css';
 
-const MINIO_BUCKET = 'manuscripts';
-const MINIO_BASE_URL = `/${MINIO_BUCKET}/`;
+// Используем MINIO_URL для картинок
 
-const LOGO_URL = MINIO_BASE_URL + 'british-museum-logo.svg';
-const DELETE_ICON_URL = MINIO_BASE_URL + 'icons8-мусорка-50.png';
+const APP_BASE = import.meta.env.BASE_URL;
+const LOGO_URL = `${APP_BASE}british-museum-logo.svg`;
+const DELETE_ICON_URL = `${APP_BASE}icons8-мусорка-50.png`; // Локальная иконка
 
 interface LetterItem {
     letterID: number;
@@ -37,20 +39,44 @@ export const ManuscriptPage: React.FC = () => {
 
     useEffect(() => {
         const fetchManuscript = async () => {
+            const token = localStorage.getItem('token');
+            // Если токена нет - корзину не получить
+            if (!token) {
+                setLoading(false);
+                return;
+            }
+
             try {
-                const response = await fetch(`/api/manuscripts/${currentId}`);
+                // ИСПРАВЛЕНО: API_URL
+                const response = await fetch(`${API_URL}/manuscripts/${currentId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
                 if (response.ok) {
                     const data = await response.json();
-                    const processedLetters = (data.letters || []).map((l: any) => ({
-                        ...l,
-                        letterID: l.Letter?.ID || l.letterID,
-                        name: l.Letter?.Name || l.name,
-                        description: l.Letter?.Description || l.description,
-                        imageURL: (l.Letter?.ImageURL || l.imageURL).startsWith('/') 
-                             ? (l.Letter?.ImageURL || l.imageURL) 
-                             : MINIO_BASE_URL + (l.Letter?.ImageURL || l.imageURL),
-                        quantity: l.Quantity || l.quantity
-                    }));
+                    const processedLetters = (data.letters || []).map((l: any) => {
+                        // Логика картинок как везде
+                        let img = l.imageURL || l.Letter?.ImageURL || ""; 
+                        // (Учитываем структуру ответа бека, иногда там вложенный Letter)
+                        
+                        if (img.includes('/manuscripts/')) {
+                            const parts = img.split('/manuscripts/');
+                            if (parts.length > 1) {
+                                img = `${MINIO_URL}/${parts[1]}`;
+                            }
+                        } else if (!img.startsWith('http')) {
+                            img = `${MINIO_URL}/${img.replace(/^\//, '')}`;
+                        }
+
+                        return {
+                            ...l,
+                            letterID: l.Letter?.ID || l.letterID,
+                            name: l.Letter?.Name || l.name,
+                            description: l.Letter?.Description || l.description,
+                            imageURL: img,
+                            quantity: l.Quantity || l.quantity
+                        };
+                    });
                     
                     setManuscript({
                         id: data.ManuscriptID || data.id,
@@ -69,8 +95,13 @@ export const ManuscriptPage: React.FC = () => {
 
     const handleDeleteManuscript = async () => {
         if(!window.confirm("Вы уверены, что хотите удалить заявку?")) return;
+        const token = localStorage.getItem('token');
         try {
-            await fetch(`/api/manuscript/delete/${manuscript.id}`, { method: 'POST' });
+            // ИСПРАВЛЕНО: API_URL
+            await fetch(`${API_URL}/manuscripts/${manuscript.id}`, { 
+                method: 'DELETE', // Или POST, как у тебя в беке
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             navigate('/services');
         } catch (error) {
             console.error("Ошибка сети:", error);
@@ -79,11 +110,16 @@ export const ManuscriptPage: React.FC = () => {
 
     const handleUpdateQuantity = async (letterID: number, newQty: number) => {
         if (newQty < 1) return;
+        const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`/api/manuscript/update/${letterID}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ quantity: newQty, manuscript_id: manuscript.id }),
+            // ИСПРАВЛЕНО: API_URL
+            const response = await fetch(`${API_URL}/manuscripts/${manuscript.id}/letters/${letterID}`, {
+                method: 'PUT', // Или POST, проверь handler.go (там PUT: /:id/letters/:lid)
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ quantity: newQty }),
             });
 
             if (response.ok) {
@@ -100,12 +136,14 @@ export const ManuscriptPage: React.FC = () => {
     };
 
     const handleRemoveLetter = async (letterID: number) => {
+        const token = localStorage.getItem('token');
         try {
-            const response = await fetch(`/api/manuscript/remove/${letterID}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ manuscript_id: manuscript.id }),
+            // ИСПРАВЛЕНО: API_URL
+            const response = await fetch(`${API_URL}/manuscripts/${manuscript.id}/letters/${letterID}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
             });
+
             if (response.ok) {
                 setManuscript(prev => ({
                     ...prev,
@@ -129,7 +167,6 @@ export const ManuscriptPage: React.FC = () => {
                 </div>
             </div>
             
-            {/* ХЛЕБНЫЕ КРОШКИ */}
             <CustomBreadcrumbs />
 
             <div className="title-row">

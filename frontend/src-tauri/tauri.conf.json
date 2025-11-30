@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "manuscript-app",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "com.manuscript",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
@@ -20,7 +20,7 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self' 'unsafe-inline' 'unsafe-eval'; connect-src 'self' http: https: ws: wss:; img-src 'self' blob: data: http: https: asset:;"
     }
   },
   "bundle": {
