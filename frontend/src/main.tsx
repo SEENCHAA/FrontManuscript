@@ -1,0 +1,21 @@
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.tsx'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './index.css' 
+// Импорты Redux
+import { Provider } from 'react-redux';
+import { store } from './store/store.ts';
+import { api } from './api';
+console.log("=== DEBUG API STRUCTURE ===");
+console.dir(api);
+console.log("Is letters defined?", !!api.letters);
+console.log("Is manuscripts defined?", !!api.manuscripts);
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <Provider store={store}>
+        <App />
+    </Provider>
+  </React.StrictMode>,
+)
